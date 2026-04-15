@@ -15,9 +15,9 @@ import {
   Zap,
   Shield,
   ArrowRight,
-  Trello,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
+import BrandMark from "@/components/brand-mark";
 
 export default function HomePage() {
   const { isSignedIn } = useUser();
@@ -114,7 +114,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Trello className="h-6 w-6 text-blue-400" />
+              <BrandMark className="h-6 w-6" />
               <span className="text-xl font-bold">TrelloClone</span>
             </div>
           </div>

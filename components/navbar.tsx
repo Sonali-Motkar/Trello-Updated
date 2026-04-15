@@ -6,12 +6,12 @@ import {
   ArrowRight,
   Filter,
   MoreHorizontal,
-  Trello,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Badge } from "./ui/badge";
+import BrandMark from "./brand-mark";
 
 interface Props {
   boardTitle?: string;
@@ -37,7 +37,7 @@ export default function Navbar({
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Trello className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+            <BrandMark className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xl sm:text-2xl font-bold text-gray-900">
               Trello Clone
             </span>
@@ -67,7 +67,7 @@ export default function Navbar({
               </Link>
               <div className="h-4 sm:h-6 w-px bg-gray-300 hidden sm:block" />
               <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
-                <Trello className="text-blue-600" />
+                <BrandMark className="h-5 w-5 sm:h-6 sm:w-6" />
                 <div className="items-center space-x-1 sm:space-x-2 min-w-0">
                   <span className="text-lg font-bold text-gray-900 truncate">
                     {boardTitle}
@@ -119,7 +119,7 @@ export default function Navbar({
     <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Trello className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+          <BrandMark className="h-6 w-6 sm:h-8 sm:w-8" />
           <span className="text-xl sm:text-2xl font-bold text-gray-900">
             Trello Clone
           </span>
