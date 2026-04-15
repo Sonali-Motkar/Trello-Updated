@@ -21,20 +21,46 @@ export default function SupabaseProvider({
   const { session } = useSession();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const hasSupabaseConfig = Boolean(supabaseUrl && supabaseAnonKey);
+  const clerkSupabaseTemplate =
+    process.env.NEXT_PUBLIC_CLERK_SUPABASE_TEMPLATE || "supabase";
 
   useEffect(() => {
-    if (!session) return;
+    if (!session) {
+      setIsLoaded(true);
+      return;
+    }
+
+    if (!hasSupabaseConfig) {
+      console.error(
+        "Missing Supabase env vars. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local."
+      );
+      setIsLoaded(true);
+      return;
+    }
+
     const client = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl!,
+      supabaseAnonKey!,
       {
-        accessToken: () => session?.getToken(),
+        // Supabase expects a JWT signed for its configured external provider.
+        // For Clerk, use a dedicated JWT template (commonly named "supabase").
+        accessToken: async () =>
+          (await session?.getToken({ template: clerkSupabaseTemplate })) ?? "",
       }
     );
 
     setSupabase(client);
     setIsLoaded(true);
-  }, [session]);
+  }, [
+    clerkSupabaseTemplate,
+    hasSupabaseConfig,
+    session,
+    supabaseAnonKey,
+    supabaseUrl,
+  ]);
 
   return (
     <Context.Provider value={{ supabase, isLoaded }}>

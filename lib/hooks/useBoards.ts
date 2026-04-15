@@ -7,9 +7,23 @@ import {
   columnService,
   taskService,
 } from "../services";
-import { useEffect, useState } from "react";
-import { Board, Column, ColumnWithTasks, Task } from "../supabase/models";
+import { useCallback, useEffect, useState } from "react";
+import { Board, ColumnWithTasks, Task } from "../supabase/models";
 import { useSupabase } from "../supabase/SupabaseProvider";
+
+function getReadableError(err: unknown, fallback: string): string {
+  if (err instanceof Error) return err.message;
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "message" in err &&
+    typeof (err as { message?: unknown }).message === "string"
+  ) {
+    return (err as { message: string }).message;
+  }
+
+  return fallback;
+}
 
 export function useBoards() {
   const { user } = useUser();
@@ -18,13 +32,7 @@ export function useBoards() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadBoards();
-    }
-  }, [user, supabase]);
-
-  async function loadBoards() {
+  const loadBoards = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -33,11 +41,17 @@ export function useBoards() {
       const data = await boardService.getBoards(supabase!, user.id);
       setBoards(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load boards.");
+      setError(getReadableError(err, "Failed to load boards."));
     } finally {
       setLoading(false);
     }
-  }
+  }, [supabase, user]);
+
+  useEffect(() => {
+    if (user) {
+      loadBoards();
+    }
+  }, [loadBoards, user]);
 
   async function createBoard(boardData: {
     title: string;
@@ -56,7 +70,7 @@ export function useBoards() {
       );
       setBoards((prev) => [newBoard, ...prev]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create board.");
+      setError(getReadableError(err, "Failed to create board."));
     }
   }
 
@@ -72,13 +86,7 @@ export function useBoard(boardId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (boardId) {
-      loadBoard();
-    }
-  }, [boardId, supabase]);
-
-  async function loadBoard() {
+  const loadBoard = useCallback(async () => {
     if (!boardId) return;
 
     try {
@@ -91,11 +99,17 @@ export function useBoard(boardId: string) {
       setBoard(data.board);
       setColumns(data.columnsWithTasks);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load boards.");
+      setError(getReadableError(err, "Failed to load boards."));
     } finally {
       setLoading(false);
     }
-  }
+  }, [boardId, supabase]);
+
+  useEffect(() => {
+    if (boardId) {
+      loadBoard();
+    }
+  }, [boardId, loadBoard]);
 
   async function updateBoard(boardId: string, updates: Partial<Board>) {
     try {
@@ -107,9 +121,7 @@ export function useBoard(boardId: string) {
       setBoard(updatedBoard);
       return updatedBoard;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update the board."
-      );
+      setError(getReadableError(err, "Failed to update the board."));
     }
   }
 
@@ -143,9 +155,7 @@ export function useBoard(boardId: string) {
 
       return newTask;
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to create the task."
-      );
+      setError(getReadableError(err, "Failed to create the task."));
     }
   }
 
@@ -182,7 +192,7 @@ export function useBoard(boardId: string) {
         return newColumns;
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to move task.");
+      setError(getReadableError(err, "Failed to move task."));
     }
   }
 
@@ -200,7 +210,7 @@ export function useBoard(boardId: string) {
       setColumns((prev) => [...prev, { ...newColumn, tasks: [] }]);
       return newColumn;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create column.");
+      setError(getReadableError(err, "Failed to create column."));
     }
   }
 
@@ -220,7 +230,7 @@ export function useBoard(boardId: string) {
 
       return updatedColumn;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create column.");
+      setError(getReadableError(err, "Failed to create column."));
     }
   }
 
