@@ -142,10 +142,6 @@ export default function HomePage() {
               <Trello className="h-6 w-6 text-blue-400" />
               <span className="text-xl font-bold">TrelloClone</span>
             </div>
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <span>© 2024 TrelloClone. All rights reserved.</span>
-              <span>Built with Next.js & Clerk</span>
-            </div>
           </div>
         </div>
       </footer>
